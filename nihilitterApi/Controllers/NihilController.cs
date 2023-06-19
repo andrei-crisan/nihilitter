@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using NihilitterApi.Models;
 
 namespace nihilitterApi.Controllers;
 
@@ -6,27 +8,17 @@ namespace nihilitterApi.Controllers;
 [Route("[controller]")]
 public class NihilController : ControllerBase
 {
-    private static readonly string[] Summaries = new[]
-    {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
+    private readonly NihilContext _context;
 
-    private readonly ILogger<WeatherForecastController> _logger;
-
-    public NihilController(ILogger<WeatherForecastController> logger)
+    public NihilController(NihilContext context)
     {
-        _logger = logger;
+        _context = context;
     }
 
-    [HttpGet(Name = "GetWeatherForecast")]
-    public IEnumerable<WeatherForecast> Get()
+    // GET: api/NihilItems
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Nihil>>> GetNihilItems()
     {
-        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-        {
-            Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-        })
-        .ToArray();
+        return await _context.NihilItems.ToListAsync();
     }
 }
