@@ -21,4 +21,22 @@ public class NihilController : ControllerBase
     {
         return await _context.NihilItems.ToListAsync();
     }
+
+    // POST: api/NihilItem
+    [HttpPost]
+    public async Task<ActionResult<Nihil>> PostNihilItem([FromBody] Nihil nihilDto)
+    {
+        Nihil nihilItem = new Nihil
+        {
+            Id = nihilDto.Id,
+            Post = nihilDto.Post,
+            PostDate = nihilDto.PostDate
+        };
+
+        _context.NihilItems.Add(nihilItem);
+        await _context.SaveChangesAsync();
+
+        //Todo: To return here and impl GetNihilItem Route
+        return CreatedAtAction("GetNihilItems", new { id = nihilItem.Id }, nihilItem);
+    }
 }

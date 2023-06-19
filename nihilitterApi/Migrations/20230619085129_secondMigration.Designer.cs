@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NihilitterApi.Models;
 
@@ -11,9 +12,11 @@ using NihilitterApi.Models;
 namespace nihilitterApi.Migrations
 {
     [DbContext(typeof(NihilContext))]
-    partial class NihilContextModelSnapshot : ModelSnapshot
+    [Migration("20230619085129_secondMigration")]
+    partial class secondMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,10 +33,10 @@ namespace nihilitterApi.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("Post")
+                    b.Property<string>("post")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("PostDate")
+                    b.Property<DateTime>("postDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");

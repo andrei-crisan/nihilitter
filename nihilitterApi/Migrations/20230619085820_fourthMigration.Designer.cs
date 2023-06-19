@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NihilitterApi.Models;
 
@@ -11,9 +12,11 @@ using NihilitterApi.Models;
 namespace nihilitterApi.Migrations
 {
     [DbContext(typeof(NihilContext))]
-    partial class NihilContextModelSnapshot : ModelSnapshot
+    [Migration("20230619085820_fourthMigration")]
+    partial class fourthMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
