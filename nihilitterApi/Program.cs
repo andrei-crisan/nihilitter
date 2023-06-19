@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using NihilitterApi.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,7 +10,20 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//SQL CONNECTION Service
+builder.Services.AddDbContext<NihilContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
 var app = builder.Build();
+
+//disable CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
+
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
