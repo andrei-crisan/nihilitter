@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NihilitterApi.Dto;
 using NihilitterApi.Models;
 
 namespace nihilitterApi.Controllers;
@@ -43,7 +44,6 @@ public class NihilController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Nihil>> GetNihilItem(long id)
     {
-
         var nihilItem = await _context.NihilItems.FindAsync(id);
 
         if (nihilItem == null)
@@ -69,5 +69,47 @@ public class NihilController : ControllerBase
         await _context.SaveChangesAsync();
 
         return NoContent();
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutNihilItem(long id, NihilDto nihilItemDto)
+    {
+        if (id != nihilItemDto.Id)
+        {
+            return BadRequest();
+        }
+
+        var nihilItem = await _context.NihilItems.FindAsync(id);
+
+        if (nihilItem == null)
+        {
+            return NotFound();
+        }
+
+        nihilItem.Post = nihilItemDto.Post;
+        nihilItem.PostDate = nihilItem.PostDate;
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!NihilItemExists(id))
+            {
+                return NotFound();
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        return NoContent();
+    }
+
+    private bool NihilItemExists(long id)
+    {
+        return _context.NihilItems.Any(e => e.Id == id);
     }
 }
