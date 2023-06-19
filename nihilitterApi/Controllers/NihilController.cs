@@ -39,4 +39,35 @@ public class NihilController : ControllerBase
         //Todo: To return here and impl GetNihilItem Route
         return CreatedAtAction("GetNihilItems", new { id = nihilItem.Id }, nihilItem);
     }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Nihil>> GetNihilItem(long id)
+    {
+
+        var nihilItem = await _context.NihilItems.FindAsync(id);
+
+        if (nihilItem == null)
+        {
+            return NotFound();
+        }
+
+        return nihilItem;
+    }
+
+    //DELETE: /api/NihilItems/{id}
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteNihilItem(long id)
+    {
+        var nihilItem = await _context.NihilItems.FindAsync(id);
+
+        if (nihilItem == null)
+        {
+            return NotFound();
+        }
+
+        _context.NihilItems.Remove(nihilItem);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }
