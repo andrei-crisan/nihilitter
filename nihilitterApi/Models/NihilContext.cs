@@ -11,6 +11,20 @@ namespace NihilitterApi.Models
         {
             this.configuration = configuration;
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Message>()
+                            .HasOne(m => m.From)
+                            .WithMany()
+                            .HasForeignKey(m => m.FromId);
+
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.To)
+                .WithMany()
+                .HasForeignKey(m => m.ToId);
+
+            base.OnModelCreating(modelBuilder);
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -18,5 +32,7 @@ namespace NihilitterApi.Models
         }
 
         public DbSet<Nihil> NihilItems { get; set; } = null!;
+        public DbSet<User> ApplicationUsers { get; set; } = null!;
+        public DbSet<Message> Messages { get; set; } = null!;
     }
 }
