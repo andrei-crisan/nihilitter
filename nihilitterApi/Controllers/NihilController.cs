@@ -29,12 +29,19 @@ public class NihilController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Nihil>> PostNihilItem([FromBody] Nihil nihilDto)
     {
+        //Todo: ValidareNotToCrash
+        string userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+
+        if(userIdClaim==null){
+            return NotFound();
+        }
+
         Nihil nihilItem = new Nihil
         {
             Id = nihilDto.Id,
             Post = nihilDto.Post,
             PostDate = nihilDto.PostDate,
-            UserId = nihilDto.UserId
+            UserId = Convert.ToInt64(userIdClaim)
         };
 
         _context.NihilItems.Add(nihilItem);
