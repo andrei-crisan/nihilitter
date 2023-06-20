@@ -31,7 +31,8 @@ public class NihilController : ControllerBase
         {
             Id = nihilDto.Id,
             Post = nihilDto.Post,
-            PostDate = nihilDto.PostDate
+            PostDate = nihilDto.PostDate,
+            UserId = nihilDto.UserId
         };
 
         _context.NihilItems.Add(nihilItem);

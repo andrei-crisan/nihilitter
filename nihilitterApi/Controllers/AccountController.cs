@@ -10,7 +10,7 @@ using NihilitterApi.Dto;
 
 namespace TrackerApi.Controllers
 {
-    [Route("api/")]
+    [Route("users/")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -23,6 +23,28 @@ namespace TrackerApi.Controllers
             _context = context;
             _configuration = configuration;
         }
+        //GET: Get all Users
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        {
+            return await _context.ApplicationUsers.ToListAsync();
+        }
+        //GET: user BYid
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<User>> GetUserById(long id)
+        {
+            var user = await _context.ApplicationUsers.Include(navigationPropertyPath: t => t.Posts)
+            .FirstOrDefaultAsync(predicate: t => t.Id == id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return user;
+        }
+
 
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] RegisterDto model)

@@ -11,20 +11,67 @@ namespace NihilitterApi.Models
         {
             this.configuration = configuration;
         }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Message>()
-                            .HasOne(m => m.From)
-                            .WithMany()
-                            .HasForeignKey(m => m.FromId);
+       protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    modelBuilder.Entity<Message>(entity =>
+    {
+        entity.HasKey(m => m.Id);
+        entity.Property(m => m.MessageBody).IsRequired();
 
-            modelBuilder.Entity<Message>()
-                .HasOne(m => m.To)
-                .WithMany()
-                .HasForeignKey(m => m.ToId);
+        entity.HasOne(m => m.From)
+            .WithMany()
+            .HasForeignKey(m => m.FromId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-            base.OnModelCreating(modelBuilder);
-        }
+        entity.HasOne(m => m.To)
+            .WithMany()
+            .HasForeignKey(m => m.ToId)
+            .OnDelete(DeleteBehavior.Restrict);
+    });
+
+    modelBuilder.Entity<Nihil>(entity =>
+    {
+        entity.HasKey(n => n.Id);
+        entity.Property(n => n.Post).IsRequired();
+        entity.Property(n => n.PostDate).IsRequired();
+
+        entity.HasOne(n => n.User)
+            .WithMany(u => u.Posts)
+            .HasForeignKey(n => n.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+    });
+
+    modelBuilder.Entity<User>(entity =>
+    {
+        entity.HasKey(u => u.Id);
+        entity.Property(u => u.FirstName).IsRequired();
+        entity.Property(u => u.LastName).IsRequired();
+        entity.Property(u => u.Country);
+        entity.Property(u => u.Email);
+        entity.Property(u => u.Password);
+
+        entity.HasMany(u => u.Friends)
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "UserFriend",
+                u => u.HasOne<User>().WithMany().HasForeignKey("UserId"),
+                f => f.HasOne<User>().WithMany().HasForeignKey("FriendId"),
+                j => j.HasKey("UserId", "FriendId")
+            );
+
+        entity.HasMany(u => u.Messages)
+            .WithOne()
+            .HasForeignKey(m => m.FromId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        entity.HasMany(u => u.Messages)
+            .WithOne()
+            .HasForeignKey(m => m.ToId)
+            .OnDelete(DeleteBehavior.Restrict);
+    });
+
+    base.OnModelCreating(modelBuilder);
+}
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
