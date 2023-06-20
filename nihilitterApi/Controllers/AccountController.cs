@@ -29,8 +29,8 @@ namespace TrackerApi.Controllers
         {
             return await _context.ApplicationUsers.ToListAsync();
         }
+        
         //GET: user BYid
-
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUserById(long id)
         {
@@ -44,7 +44,6 @@ namespace TrackerApi.Controllers
 
             return user;
         }
-
 
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] RegisterDto model)
@@ -78,9 +77,9 @@ namespace TrackerApi.Controllers
                 var token = GenerateJwtToken(user);
                 return Ok(new { token });
             }
-
             return Unauthorized();
         }
+
 
         private string GenerateJwtToken(User user)
         {

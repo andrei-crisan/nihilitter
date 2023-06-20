@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NihilitterApi.Dto;
@@ -18,6 +19,7 @@ public class NihilController : ControllerBase
 
     // GET: api/NihilItems
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<Nihil>>> GetNihilItems()
     {
         return await _context.NihilItems.ToListAsync();
