@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -34,11 +35,21 @@ public class NihilController : ControllerBase
     }
 
     //GET OWN
-    [HttpGet ("/allNihil")]
+    [HttpGet("/allNihil")]
     public async Task<ActionResult<IEnumerable<Nihil>>> GetOwnNihilItems()
     {
+        string authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+        string sentToken = authorizationHeader.Replace("Bearer ", "");
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var jwtToken = tokenHandler.ReadToken(sentToken) as JwtSecurityToken;
+        long userIdStringFromHeaders = Convert.ToInt64(jwtToken.Claims.FirstOrDefault(c => c.Type == "Id")?.Value);
+
         long userIdClaim = Convert.ToInt64(User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value);
-        return await _context.NihilItems.Where(f => f.UserId == userIdClaim).ToListAsync();
+
+        if(userIdClaim!=userIdStringFromHeaders){
+            return NotFound();
+        }
+        return await _context.NihilItems.Where(f => f.UserId == userIdStringFromHeaders).ToListAsync();
 
     }
     // POST: api/NihilItem
