@@ -22,10 +22,9 @@ public class NihilController : ControllerBase
     public async Task<ActionResult<IEnumerable<Nihil>>> GetNihilItems()
     {
         long userIdClaim = Convert.ToInt64(User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value);
-        
-        //TODO: To check if the friendship is confirmed!!!
+
         var friendUserIds = await _context.Friends
-            .Where(f => f.UserId == userIdClaim)
+            .Where(f => f.UserId == userIdClaim && f.isConfirmed == true)
             .Select(f => f.FriendId)
             .ToListAsync();
 
@@ -34,6 +33,14 @@ public class NihilController : ControllerBase
         return nihilItems;
     }
 
+    //GET OWN
+    [HttpGet ("/allNihil")]
+    public async Task<ActionResult<IEnumerable<Nihil>>> GetOwnNihilItems()
+    {
+        long userIdClaim = Convert.ToInt64(User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value);
+        return await _context.NihilItems.Where(f => f.UserId == userIdClaim).ToListAsync();
+
+    }
     // POST: api/NihilItem
     [HttpPost]
     public async Task<ActionResult<Nihil>> PostNihilItem([FromBody] Nihil nihilDto)

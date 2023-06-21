@@ -79,22 +79,19 @@ public class FriendshipController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutNihilItem(long id, NihilDto nihilItemDto)
+    public async Task<IActionResult> ConfirmFriendship(long id)
     {
-        if (id != nihilItemDto.Id)
-        {
-            return BadRequest();
-        }
+        var friendItem = await _context.Friends.FindAsync(id);
 
-        var nihilItem = await _context.NihilItems.FindAsync(id);
-
-        if (nihilItem == null)
+        if (friendItem == null)
         {
             return NotFound();
         }
 
-        nihilItem.Post = nihilItemDto.Post;
-        nihilItem.PostDate = nihilItem.PostDate;
+        friendItem.isConfirmed = true;
+
+        //TODO: To add in the list of the one who accepts the new confirmed friend also!!!!!
+        //Todo: See my own nihilieets on my PROFILE page endpoint pentru
 
         try
         {
@@ -102,7 +99,7 @@ public class FriendshipController : ControllerBase
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!NihilItemExists(id))
+            if (!FriendItem(id))
             {
                 return NotFound();
             }
@@ -115,8 +112,8 @@ public class FriendshipController : ControllerBase
         return NoContent();
     }
 
-    private bool NihilItemExists(long id)
+    private bool FriendItem(long id)
     {
-        return _context.NihilItems.Any(e => e.Id == id);
+        return _context.Friends.Any(e => e.Id == id);
     }
 }
