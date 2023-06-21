@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NihilitterApi.Models;
 
@@ -11,9 +12,11 @@ using NihilitterApi.Models;
 namespace nihilitterApi.Migrations
 {
     [DbContext(typeof(NihilContext))]
-    partial class NihilContextModelSnapshot : ModelSnapshot
+    [Migration("20230621100052_friendship")]
+    partial class friendship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,7 +44,7 @@ namespace nihilitterApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Friends");
+                    b.ToTable("Friend");
                 });
 
             modelBuilder.Entity("NihilitterApi.Models.Message", b =>
@@ -56,12 +59,13 @@ namespace nihilitterApi.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("MessageBody")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("ToId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("UserId")
+                    b.Property<long?>("ToId1")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -70,7 +74,7 @@ namespace nihilitterApi.Migrations
 
                     b.HasIndex("ToId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ToId1");
 
                     b.ToTable("Messages");
                 });
@@ -84,6 +88,7 @@ namespace nihilitterApi.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Post")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("PostDate")
@@ -148,17 +153,16 @@ namespace nihilitterApi.Migrations
                 {
                     b.HasOne("NihilitterApi.Models.User", "From")
                         .WithMany()
-                        .HasForeignKey("FromId")
+                        .HasForeignKey("FromId");
+
+                    b.HasOne("NihilitterApi.Models.User", null)
+                        .WithMany("Messages")
+                        .HasForeignKey("ToId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("NihilitterApi.Models.User", "To")
                         .WithMany()
-                        .HasForeignKey("ToId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("NihilitterApi.Models.User", null)
-                        .WithMany("Messages")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("ToId1");
 
                     b.Navigation("From");
 
@@ -170,7 +174,7 @@ namespace nihilitterApi.Migrations
                     b.HasOne("NihilitterApi.Models.User", "User")
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("User");
                 });

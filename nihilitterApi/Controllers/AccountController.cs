@@ -29,13 +29,15 @@ namespace TrackerApi.Controllers
         {
             return await _context.ApplicationUsers.ToListAsync();
         }
-        
+
         //GET: user BYid
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUserById(long id)
         {
-            var user = await _context.ApplicationUsers.Include(navigationPropertyPath: t => t.Posts)
-            .FirstOrDefaultAsync(predicate: t => t.Id == id);
+            var user = await _context.ApplicationUsers
+                .Include(u => u.Posts)
+                .Include(u => u.Friends)
+                .FirstOrDefaultAsync(u => u.Id == id);
 
             if (user == null)
             {

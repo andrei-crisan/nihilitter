@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NihilitterApi.Dto;
@@ -8,35 +7,25 @@ namespace nihilitterApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class NihilController : ControllerBase
+public class FriendshipController : ControllerBase
 {
     private readonly NihilContext _context;
 
-    public NihilController(NihilContext context)
+    public FriendshipController(NihilContext context)
     {
         _context = context;
     }
 
     // GET: api/NihilItems
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Nihil>>> GetNihilItems()
+    public async Task<ActionResult<IEnumerable<Friend>>> GetFriends()
     {
-        long userIdClaim = Convert.ToInt64(User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value);
-        
-        //TODO: To check if the friendship is confirmed!!!
-        var friendUserIds = await _context.Friends
-            .Where(f => f.UserId == userIdClaim)
-            .Select(f => f.FriendId)
-            .ToListAsync();
-
-        var nihilItems = await _context.NihilItems.Where(n => friendUserIds.Contains(n.UserId)).ToListAsync();
-
-        return nihilItems;
+        return await _context.Friends.ToListAsync();
     }
 
     // POST: api/NihilItem
     [HttpPost]
-    public async Task<ActionResult<Nihil>> PostNihilItem([FromBody] Nihil nihilDto)
+    public async Task<ActionResult<Nihil>> SaveFriend([FromBody] FriendDto friendDto)
     {
         string userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
 
@@ -45,19 +34,18 @@ public class NihilController : ControllerBase
             return NotFound();
         }
 
-        Nihil nihilItem = new Nihil
+        Friend friendItem = new Friend
         {
-            Id = nihilDto.Id,
-            Post = nihilDto.Post,
-            PostDate = nihilDto.PostDate,
-            UserId = Convert.ToInt64(userIdClaim)
+            UserId = Convert.ToInt64(userIdClaim),
+            FriendId = friendDto.FriendId,
+            isConfirmed = false
         };
 
-        _context.NihilItems.Add(nihilItem);
+        _context.Friends.Add(friendItem);
         await _context.SaveChangesAsync();
 
         //Todo: To return here and impl GetNihilItem Route
-        return CreatedAtAction("GetNihilItems", new { id = nihilItem.Id }, nihilItem);
+        return CreatedAtAction("GetFriends", new { id = friendItem.Id }, friendItem);
     }
 
     [HttpGet("{id}")]

@@ -11,67 +11,65 @@ namespace NihilitterApi.Models
         {
             this.configuration = configuration;
         }
-       protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-    modelBuilder.Entity<Message>(entity =>
-    {
-        entity.HasKey(m => m.Id);
-        entity.Property(m => m.MessageBody).IsRequired();
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasKey(e => e.Id);
 
-        entity.HasOne(m => m.From)
-            .WithMany()
-            .HasForeignKey(m => m.FromId)
-            .OnDelete(DeleteBehavior.Restrict);
+                entity.Property(e => e.FirstName)
+                    .HasMaxLength(100);
 
-        entity.HasOne(m => m.To)
-            .WithMany()
-            .HasForeignKey(m => m.ToId)
-            .OnDelete(DeleteBehavior.Restrict);
-    });
+                entity.Property(e => e.LastName)
+                    .HasMaxLength(100);
 
-    modelBuilder.Entity<Nihil>(entity =>
-    {
-        entity.HasKey(n => n.Id);
-        entity.Property(n => n.Post).IsRequired();
-        entity.Property(n => n.PostDate).IsRequired();
+                entity.Property(e => e.Country)
+                    .HasMaxLength(100);
 
-        entity.HasOne(n => n.User)
-            .WithMany(u => u.Posts)
-            .HasForeignKey(n => n.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
-    });
+                entity.Property(e => e.Email)
+                    .HasMaxLength(100);
 
-    modelBuilder.Entity<User>(entity =>
-    {
-        entity.HasKey(u => u.Id);
-        entity.Property(u => u.FirstName).IsRequired();
-        entity.Property(u => u.LastName).IsRequired();
-        entity.Property(u => u.Country);
-        entity.Property(u => u.Email);
-        entity.Property(u => u.Password);
+                entity.Property(e => e.Password)
+                    .HasMaxLength(100);
 
-        entity.HasMany(u => u.Friends)
-            .WithMany()
-            .UsingEntity<Dictionary<string, object>>(
-                "UserFriend",
-                u => u.HasOne<User>().WithMany().HasForeignKey("UserId"),
-                f => f.HasOne<User>().WithMany().HasForeignKey("FriendId"),
-                j => j.HasKey("UserId", "FriendId")
-            );
+                entity.HasMany(e => e.Posts)
+                    .WithOne(e => e.User)
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
 
-        entity.HasMany(u => u.Messages)
-            .WithOne()
-            .HasForeignKey(m => m.FromId)
-            .OnDelete(DeleteBehavior.Restrict);
+                entity.HasMany(e => e.Friends)
+                    .WithOne()
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
 
-        entity.HasMany(u => u.Messages)
-            .WithOne()
-            .HasForeignKey(m => m.ToId)
-            .OnDelete(DeleteBehavior.Restrict);
-    });
+            modelBuilder.Entity<Nihil>(entity =>
+            {
+                entity.HasKey(e => e.Id);
 
-    base.OnModelCreating(modelBuilder);
-}
+                entity.Property(e => e.Post);
+
+                entity.Property(e => e.PostDate);
+
+                entity.HasOne(e => e.User)
+                    .WithMany(e => e.Posts)
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Friend>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.UserId);
+
+                entity.Property(e => e.FriendId);
+
+                entity.Property(e => e.isConfirmed);
+            });
+
+            base.OnModelCreating(modelBuilder);
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -81,5 +79,6 @@ namespace NihilitterApi.Models
         public DbSet<Nihil> NihilItems { get; set; } = null!;
         public DbSet<User> ApplicationUsers { get; set; } = null!;
         public DbSet<Message> Messages { get; set; } = null!;
+        public DbSet<Friend> Friends { get; set; } = null!;
     }
 }
