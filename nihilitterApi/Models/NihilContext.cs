@@ -57,7 +57,7 @@ namespace NihilitterApi.Models
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            modelBuilder.Entity<Friend>(entity =>
+            modelBuilder.Entity<Friendship>(entity =>
             {
                 entity.HasKey(e => e.Id);
 
@@ -79,6 +79,6 @@ namespace NihilitterApi.Models
         public DbSet<Nihil> NihilItems { get; set; } = null!;
         public DbSet<User> ApplicationUsers { get; set; } = null!;
         public DbSet<Message> Messages { get; set; } = null!;
-        public DbSet<Friend> Friends { get; set; } = null!;
+        public DbSet<Friendship> Friends { get; set; } = null!;
     }
 }

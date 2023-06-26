@@ -1,6 +1,6 @@
 namespace NihilitterApi.Models
 {
-    public class Friend
+    public class Friendship
     {
         public long? Id { get; set; }
         public long? UserId{get;set;}

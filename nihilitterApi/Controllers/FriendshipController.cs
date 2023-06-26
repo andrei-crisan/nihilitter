@@ -18,9 +18,32 @@ public class FriendshipController : ControllerBase
 
     // GET: api/NihilItems
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Friend>>> GetFriends()
+    public async Task<ActionResult<IEnumerable<Friendship>>> GetFriends()
     {
         return await _context.Friends.ToListAsync();
+    }
+
+    [HttpGet("friends")]
+    public async Task<ActionResult<IEnumerable<UserDto>>> GetAllFriends()
+    {
+        {
+            //Todo: hardcoded Id to be removed with TokenClaimId
+            var friendShipListOfUser = await _context.Friends.Where(friend => friend.UserId == 1).ToListAsync();
+            var friendsOfUser = await _context.ApplicationUsers
+                .Where(user => friendShipListOfUser.Select(friend => friend.FriendId).Contains(user.Id)).ToListAsync();
+
+            var friendsOfUser2 = await _context.ApplicationUsers
+                     .Where(user => friendShipListOfUser.Select(friend => friend.FriendId).Contains(user.Id))
+                     .Select(user => new UserDto
+                    {
+                        Id = user.Id,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Country = user.Country,
+                        Email = user.Email
+                    }).ToListAsync();
+            return friendsOfUser2;
+        }
     }
 
     // POST: api/NihilItem
@@ -34,7 +57,7 @@ public class FriendshipController : ControllerBase
             return NotFound();
         }
 
-        Friend friendItem = new Friend
+        Friendship friendItem = new Friendship
         {
             UserId = Convert.ToInt64(userIdClaim),
             FriendId = friendDto.FriendId,
