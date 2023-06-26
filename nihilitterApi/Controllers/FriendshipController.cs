@@ -24,31 +24,30 @@ public class FriendshipController : ControllerBase
     }
 
     [HttpGet("friends")]
-    public async Task<ActionResult<IEnumerable<UserDto>>> GetAllFriends()
+    public async Task<ActionResult<IEnumerable<FriendDto>>> GetAllFriendsByUser()
     {
         {
-            //Todo: hardcoded Id to be removed with TokenClaimId
+            //Todo: checkings for NULLS
+            long userIdClaim = Convert.ToInt64(User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value);
+
             var friendShipListOfUser = await _context.Friends.Where(friend => friend.UserId == 1).ToListAsync();
             var friendsOfUser = await _context.ApplicationUsers
-                .Where(user => friendShipListOfUser.Select(friend => friend.FriendId).Contains(user.Id)).ToListAsync();
-
-            var friendsOfUser2 = await _context.ApplicationUsers
                      .Where(user => friendShipListOfUser.Select(friend => friend.FriendId).Contains(user.Id))
-                     .Select(user => new UserDto
-                    {
-                        Id = user.Id,
-                        FirstName = user.FirstName,
-                        LastName = user.LastName,
-                        Country = user.Country,
-                        Email = user.Email
-                    }).ToListAsync();
-            return friendsOfUser2;
+                     .Select(user => new FriendDto
+                     {
+                         Id = user.Id,
+                         FirstName = user.FirstName,
+                         LastName = user.LastName,
+                         Country = user.Country,
+                         Email = user.Email
+                     }).ToListAsync();
+            return friendsOfUser;
         }
     }
 
     // POST: api/NihilItem
     [HttpPost]
-    public async Task<ActionResult<Nihil>> SaveFriend([FromBody] FriendDto friendDto)
+    public async Task<ActionResult<Nihil>> SaveFriend([FromBody] FriendshipDto friendDto)
     {
         string userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
 
