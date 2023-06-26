@@ -7,5 +7,6 @@ namespace NihilitterApi.Dto
         public String? LastName { get; set; }
         public String? Country { get; set; }
         public String? Email { get; set; }
+        public Boolean? IsConfirmed { get; set;}
     }
 }

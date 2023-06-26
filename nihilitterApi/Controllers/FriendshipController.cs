@@ -5,8 +5,8 @@ using NihilitterApi.Models;
 
 namespace nihilitterApi.Controllers;
 
+[Route("friendship/")]
 [ApiController]
-[Route("[controller]")]
 public class FriendshipController : ControllerBase
 {
     private readonly NihilContext _context;
@@ -18,11 +18,12 @@ public class FriendshipController : ControllerBase
 
     // GET: api/NihilItems
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Friendship>>> GetFriends()
+    public async Task<ActionResult<IEnumerable<Friendship>>> GetFriendShips()
     {
         return await _context.Friends.ToListAsync();
     }
 
+    // GET: api/friends
     [HttpGet("friends")]
     public async Task<ActionResult<IEnumerable<FriendDto>>> GetAllFriendsByUser()
     {
@@ -30,24 +31,31 @@ public class FriendshipController : ControllerBase
             //Todo: checkings for NULLS
             long userIdClaim = Convert.ToInt64(User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value);
 
-            var friendShipListOfUser = await _context.Friends.Where(friend => friend.UserId == 1).ToListAsync();
+            var friendShipListOfUser = await _context.Friends.Where(friend => friend.UserId == userIdClaim).ToListAsync();
             var friendsOfUser = await _context.ApplicationUsers
-                     .Where(user => friendShipListOfUser.Select(friend => friend.FriendId).Contains(user.Id))
-                     .Select(user => new FriendDto
-                     {
-                         Id = user.Id,
-                         FirstName = user.FirstName,
-                         LastName = user.LastName,
-                         Country = user.Country,
-                         Email = user.Email
-                     }).ToListAsync();
+     .Where(user => friendShipListOfUser.Select(friend => friend.FriendId).Contains(user.Id))
+     .Select(user => new FriendDto
+     {
+         Id = user.Id,
+         FirstName = user.FirstName,
+         LastName = user.LastName,
+         Country = user.Country,
+         Email = user.Email
+     })
+     .ToListAsync();
+
+            foreach (var friend in friendsOfUser)
+            {
+                var friendShip = friendShipListOfUser.FirstOrDefault(f => f.FriendId == friend.Id);
+                friend.IsConfirmed = friendShip != null && friendShip.isConfirmed;
+            }
             return friendsOfUser;
         }
     }
 
     // POST: api/NihilItem
     [HttpPost]
-    public async Task<ActionResult<Nihil>> SaveFriend([FromBody] FriendshipDto friendDto)
+    public async Task<ActionResult<Nihil>> SaveFriendship([FromBody] FriendshipDto friendDto)
     {
         string userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
 
@@ -71,7 +79,7 @@ public class FriendshipController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Nihil>> GetNihilItem(long id)
+    public async Task<ActionResult<Nihil>> GetFriendShipById(long id)
     {
         var nihilItem = await _context.NihilItems.FindAsync(id);
 
@@ -85,7 +93,7 @@ public class FriendshipController : ControllerBase
 
     //DELETE: /api/NihilItems/{id}
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteNihilItem(long id)
+    public async Task<IActionResult> DeleteFriendship(long id)
     {
         var nihilItem = await _context.NihilItems.FindAsync(id);
 
