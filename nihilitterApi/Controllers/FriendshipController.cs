@@ -64,18 +64,26 @@ public class FriendshipController : ControllerBase
             return NotFound();
         }
 
-        Friendship friendItem = new Friendship
+        Friendship myFriendship = new Friendship
         {
             UserId = Convert.ToInt64(userIdClaim),
             FriendId = friendDto.FriendId,
             isConfirmed = false
         };
 
-        _context.Friends.Add(friendItem);
+        Friendship hisFriendship = new Friendship
+        {
+            UserId = friendDto.FriendId,
+            FriendId = Convert.ToInt64(userIdClaim),
+            isConfirmed = true
+        };
+
+        _context.Friends.Add(myFriendship);
+        _context.Friends.Add(hisFriendship);
         await _context.SaveChangesAsync();
 
         //Todo: To return here and impl GetNihilItem Route
-        return CreatedAtAction("GetFriends", new { id = friendItem.Id }, friendItem);
+        return CreatedAtAction("GetFriends", new { id = myFriendship.Id }, myFriendship);
     }
 
     [HttpGet("{id}")]
