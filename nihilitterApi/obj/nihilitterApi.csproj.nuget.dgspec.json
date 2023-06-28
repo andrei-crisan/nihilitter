@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\dev\\net_examen\\v2\\nihilitter\\nihilitterApi\\nihilitterApi.csproj": {}
+    "C:\\dev\\net_examen\\nihilitterApi\\nihilitterApi\\nihilitterApi.csproj": {}
   },
   "projects": {
-    "C:\\dev\\net_examen\\v2\\nihilitter\\nihilitterApi\\nihilitterApi.csproj": {
+    "C:\\dev\\net_examen\\nihilitterApi\\nihilitterApi\\nihilitterApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\dev\\net_examen\\v2\\nihilitter\\nihilitterApi\\nihilitterApi.csproj",
+        "projectUniqueName": "C:\\dev\\net_examen\\nihilitterApi\\nihilitterApi\\nihilitterApi.csproj",
         "projectName": "nihilitterApi",
-        "projectPath": "C:\\dev\\net_examen\\v2\\nihilitter\\nihilitterApi\\nihilitterApi.csproj",
+        "projectPath": "C:\\dev\\net_examen\\nihilitterApi\\nihilitterApi\\nihilitterApi.csproj",
         "packagesPath": "C:\\Users\\Andrei\\.nuget\\packages\\",
-        "outputPath": "C:\\dev\\net_examen\\v2\\nihilitter\\nihilitterApi\\obj\\",
+        "outputPath": "C:\\dev\\net_examen\\nihilitterApi\\nihilitterApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Andrei\\AppData\\Roaming\\NuGet\\NuGet.Config",

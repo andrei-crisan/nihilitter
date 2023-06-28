@@ -7,6 +7,6 @@ namespace NihilitterApi.Models
         public long? FriendId { get; set; }
         public Boolean isConfirmed { get; set; }
 
-    }
+    }      
 
 }

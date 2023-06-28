@@ -25,7 +25,7 @@ public class NihilController : ControllerBase
         long userIdClaim = Convert.ToInt64(User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value);
 
         var friendUserIds = await _context.Friends
-            .Where(f => f.UserId == userIdClaim && f.isConfirmed == true)
+            .Where(f => f.UserId == userIdClaim)
             .Select(f => f.FriendId)
             .ToListAsync();
 

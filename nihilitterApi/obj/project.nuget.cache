@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "fkWFGx3THuTxk7D2YjzwP1hIpoxcUVCs1KU/9rVnnDL6jCGdDXJPNCNiXDaXHX4SU6dR5Xd4PJAM3Sc+qzxvUA==",
+  "dgSpecHash": "KNQ0ftqiJT+Qr0EeplXuaw5O9VDa5RDtGOnKLcnSuG9uBntfnLn3+n7rcLkn93Yxun2y6CjSsu850/AqwAVkuw==",
   "success": true,
-  "projectFilePath": "C:\\dev\\net_examen\\v2\\nihilitter\\nihilitterApi\\nihilitterApi.csproj",
+  "projectFilePath": "C:\\dev\\net_examen\\nihilitterApi\\nihilitterApi\\nihilitterApi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Andrei\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\Andrei\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",
