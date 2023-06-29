@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NihilitterApi.Dto;
@@ -18,6 +19,7 @@ public class FriendshipController : ControllerBase
 
     // GET: api/NihilItems
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<Friendship>>> GetFriendShips()
     {
         return await _context.Friends.ToListAsync();
@@ -26,6 +28,7 @@ public class FriendshipController : ControllerBase
     // GET: api/friends
 
     [HttpGet("friends")]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<FriendDto>>> GetAllFriendShipsOfUser()
     {
         {
@@ -54,6 +57,7 @@ public class FriendshipController : ControllerBase
         }
     }
     [HttpGet("followers")]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<FriendDto>>> GetFollowers()
     {
         {
@@ -84,6 +88,7 @@ public class FriendshipController : ControllerBase
 
     // POST: api/NihilItem
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult<Friendship>> SaveFriendship([FromBody] long newFriendId)
     {
         string userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
@@ -108,6 +113,7 @@ public class FriendshipController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize]
     public async Task<ActionResult<Friendship>> GetFriendShipById(long id)
     {
         var friendship = await _context.Friends.FindAsync(id);
@@ -138,6 +144,7 @@ public class FriendshipController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize]
     public async Task<IActionResult> ConfirmFriendship(long id, FriendRequest friendRequest)
     {
         long userIdClaim = Convert.ToInt64(User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value);

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using NihilitterApi.Models;
 using NihilitterApi.Dto;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TrackerApi.Controllers
 {
@@ -24,6 +25,7 @@ namespace TrackerApi.Controllers
         }
         //GET: Get all Users
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {
             var users = await _context.ApplicationUsers.ToListAsync();
@@ -42,6 +44,7 @@ namespace TrackerApi.Controllers
 
         //GET: user byId
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<User>> GetUserById(long id)
         {
             var user = await _context.ApplicationUsers

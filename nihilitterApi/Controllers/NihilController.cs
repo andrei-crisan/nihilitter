@@ -20,6 +20,7 @@ public class NihilController : ControllerBase
 
     // GET: api/NihilItems
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<NihilDto>>> GetNihilItems()
     {
         long userIdClaim = Convert.ToInt64(User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value);
@@ -48,9 +49,9 @@ public class NihilController : ControllerBase
         return nihilWithUserDtos;
     }
 
-
     //GET OWN
     [HttpGet("/allNihil")]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<Nihil>>> GetOwnNihilItems()
     {
         string authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
@@ -71,6 +72,7 @@ public class NihilController : ControllerBase
 
     // POST: api/NihilItem
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult<Nihil>> PostNihilItem([FromBody] Nihil nihilDto)
     {
         string userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
@@ -96,6 +98,7 @@ public class NihilController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize]
     public async Task<ActionResult<Nihil>> GetNihilItem(long id)
     {
         var nihilItem = await _context.NihilItems.FindAsync(id);
@@ -110,6 +113,7 @@ public class NihilController : ControllerBase
 
     //DELETE: /api/NihilItems/{id}
     [HttpDelete("{id}")]
+    [Authorize]
     public async Task<IActionResult> DeleteNihilItem(long id)
     {
         var nihilItem = await _context.NihilItems.FindAsync(id);
@@ -126,6 +130,7 @@ public class NihilController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize]
     public async Task<IActionResult> PutNihilItem(long id, NihilDto nihilItemDto)
     {
         if (id != nihilItemDto.Id)
