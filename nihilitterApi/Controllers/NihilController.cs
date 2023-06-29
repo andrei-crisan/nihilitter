@@ -54,19 +54,14 @@ public class NihilController : ControllerBase
     [Authorize]
     public async Task<ActionResult<IEnumerable<Nihil>>> GetOwnNihilItems()
     {
-        string authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-        string sentToken = authorizationHeader.Replace("Bearer ", "");
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var jwtToken = tokenHandler.ReadToken(sentToken) as JwtSecurityToken;
-        long userIdStringFromHeaders = Convert.ToInt64(jwtToken.Claims.FirstOrDefault(c => c.Type == "Id")?.Value);
-
+        long userIdFromHeaders = headerTokenReturner();
         long userIdClaim = Convert.ToInt64(User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value);
 
-        if (userIdClaim != userIdStringFromHeaders)
+        if (userIdFromHeaders != userIdClaim)
         {
-            return NotFound();
+            return Unauthorized();
         }
-        return await _context.NihilItems.Where(f => f.UserId == userIdStringFromHeaders).ToListAsync();
+        return await _context.NihilItems.Where(f => f.UserId == userIdFromHeaders).ToListAsync();
 
     }
 
@@ -75,9 +70,15 @@ public class NihilController : ControllerBase
     [Authorize]
     public async Task<ActionResult<Nihil>> PostNihilItem([FromBody] Nihil nihilDto)
     {
-        string userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+        long userIdFromHeaders = headerTokenReturner();
+        long userIdClaim = Convert.ToInt64(User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value);
 
-        if (userIdClaim == null)
+        if (userIdFromHeaders != userIdClaim)
+        {
+            return Unauthorized();
+        }
+
+        if (userIdClaim == 0)
         {
             return NotFound();
         }
@@ -93,7 +94,6 @@ public class NihilController : ControllerBase
         _context.NihilItems.Add(nihilItem);
         await _context.SaveChangesAsync();
 
-        //Todo: To return here and impl GetNihilItem Route
         return CreatedAtAction("GetNihilItems", new { id = nihilItem.Id }, nihilItem);
     }
 
@@ -116,6 +116,14 @@ public class NihilController : ControllerBase
     [Authorize]
     public async Task<IActionResult> DeleteNihilItem(long id)
     {
+        long userIdFromHeaders = headerTokenReturner();
+        long userIdClaim = Convert.ToInt64(User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value);
+
+        if (userIdFromHeaders != userIdClaim)
+        {
+            return Unauthorized();
+        }
+
         var nihilItem = await _context.NihilItems.FindAsync(id);
 
         if (nihilItem == null)
@@ -133,6 +141,14 @@ public class NihilController : ControllerBase
     [Authorize]
     public async Task<IActionResult> PutNihilItem(long id, NihilDto nihilItemDto)
     {
+        long userIdFromHeaders = headerTokenReturner();
+        long userIdClaim = Convert.ToInt64(User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value);
+
+        if (userIdFromHeaders != userIdClaim)
+        {
+            return Unauthorized();
+        }
+
         if (id != nihilItemDto.Id)
         {
             return BadRequest();
@@ -169,5 +185,17 @@ public class NihilController : ControllerBase
     private bool NihilItemExists(long id)
     {
         return _context.NihilItems.Any(e => e.Id == id);
+    }
+
+    private long headerTokenReturner()
+    {
+        string authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+        string sentToken = authorizationHeader.Replace("Bearer ", "");
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var jwtToken = tokenHandler.ReadToken(sentToken) as JwtSecurityToken;
+        string userIdStringFromHeaders = jwtToken.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+
+        return Convert.ToInt64(userIdStringFromHeaders);
+
     }
 }
