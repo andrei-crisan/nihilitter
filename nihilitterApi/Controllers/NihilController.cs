@@ -20,7 +20,7 @@ public class NihilController : ControllerBase
 
     // GET: api/NihilItems
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Nihil>>> GetNihilItems()
+    public async Task<ActionResult<IEnumerable<NihilDto>>> GetNihilItems()
     {
         long userIdClaim = Convert.ToInt64(User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value);
 
@@ -29,10 +29,25 @@ public class NihilController : ControllerBase
             .Select(f => f.FriendId)
             .ToListAsync();
 
-        var nihilItems = await _context.NihilItems.Where(n => friendUserIds.Contains(n.UserId)).ToListAsync();
+        var users = await _context.ApplicationUsers.ToListAsync();
 
-        return nihilItems;
+        var nihilItems = await _context.NihilItems
+            .Where(n => friendUserIds.Contains(n.UserId))
+            .ToListAsync();
+
+        var nihilWithUserDtos = nihilItems.Select(nihil => new NihilDto
+        {
+            Id = nihil.Id,
+            FirstName = users.FirstOrDefault(u => u.Id == nihil.UserId).FirstName,
+            LastName = users.FirstOrDefault(u => u.Id == nihil.UserId).LastName,
+            Post = nihil.Post,
+            PostDate = nihil.PostDate,
+            UserId = nihil.UserId
+        }).ToList();
+
+        return nihilWithUserDtos;
     }
+
 
     //GET OWN
     [HttpGet("/allNihil")]
@@ -46,12 +61,14 @@ public class NihilController : ControllerBase
 
         long userIdClaim = Convert.ToInt64(User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value);
 
-        if(userIdClaim!=userIdStringFromHeaders){
+        if (userIdClaim != userIdStringFromHeaders)
+        {
             return NotFound();
         }
         return await _context.NihilItems.Where(f => f.UserId == userIdStringFromHeaders).ToListAsync();
 
     }
+
     // POST: api/NihilItem
     [HttpPost]
     public async Task<ActionResult<Nihil>> PostNihilItem([FromBody] Nihil nihilDto)
@@ -141,7 +158,6 @@ public class NihilController : ControllerBase
                 throw;
             }
         }
-
         return NoContent();
     }
 

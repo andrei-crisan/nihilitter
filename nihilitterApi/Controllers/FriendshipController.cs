@@ -49,7 +49,6 @@ public class FriendshipController : ControllerBase
                 var friendShip = friendShipListOfUser.FirstOrDefault(f => f.FriendId == friend.Id);
                 friend.IsConfirmed = friendShip != null && friendShip.isConfirmed;
                 friend.FriendshipId = friendShip?.Id;
-
             }
             return friendsOfUser;
         }
@@ -82,6 +81,7 @@ public class FriendshipController : ControllerBase
             return friendsOfUser;
         }
     }
+
     // POST: api/NihilItem
     [HttpPost]
     public async Task<ActionResult<Friendship>> SaveFriendship([FromBody] long newFriendId)

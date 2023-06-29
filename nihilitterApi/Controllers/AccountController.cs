@@ -15,7 +15,6 @@ namespace TrackerApi.Controllers
     public class AccountController : ControllerBase
     {
         private readonly NihilContext _context;
-
         private readonly IConfiguration _configuration;
 
         public AccountController(NihilContext context, IConfiguration configuration)
@@ -25,12 +24,23 @@ namespace TrackerApi.Controllers
         }
         //GET: Get all Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {
-            return await _context.ApplicationUsers.ToListAsync();
+            var users = await _context.ApplicationUsers.ToListAsync();
+            var userDtos = users.Select(user => new UserDto
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Country = user.Country,
+                Email = user.Email,
+                Friends = user.Friends
+            }).ToList();
+
+            return userDtos;
         }
 
-        //GET: user BYid
+        //GET: user byId
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUserById(long id)
         {
@@ -43,7 +53,6 @@ namespace TrackerApi.Controllers
             {
                 return NotFound();
             }
-
             return user;
         }
 
@@ -59,8 +68,6 @@ namespace TrackerApi.Controllers
                 Email = model.Email,
                 Password = hashedPassword
             };
-
-            // TODO: validate username to be unique
 
             _context.ApplicationUsers.Add(user);
             await _context.SaveChangesAsync();
